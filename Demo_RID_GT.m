@@ -1,25 +1,24 @@
 %--------------------------------------------------------------------------
 clear;
-Original_image_dir = 'C:\Users\csjunxu\Desktop\CVPR2017\crosschannel_CVPR2016\real_image_noise_dataset\';
-fpath = fullfile(Original_image_dir, '*.png');
-GT_fpath = fullfile(Original_image_dir, 'CC_Mean_*.png');
-CC_fpath = fullfile(Original_image_dir, 'CC_Noisy_*.png');
-im_dir  = dir(fpath);
+GT_Original_image_dir = 'C:\Users\csjunxu\Desktop\CVPR2017\cc_Results\Real_MeanImage\';
+GT_fpath = fullfile(GT_Original_image_dir, '*.png');
+CC_Original_image_dir = 'C:\Users\csjunxu\Desktop\CVPR2017\cc_Results\Real_NoisyImage\';
+CC_fpath = fullfile(CC_Original_image_dir, '*.png');
 GT_im_dir  = dir(GT_fpath);
 CC_im_dir  = dir(CC_fpath);
 im_num = length(CC_im_dir);
 
 format compact;
 method           =  'CSF';
-nSig     =  [15];
+nSig     =  15;
 modelname = 'csf_7x7';
 
 PSNR = [];
 SSIM = [];
-for i = 1 : im_num
-    IM =   im2double(imread( fullfile(Original_image_dir,CC_im_dir(i).name) ));
-    IM_GT = im2double(imread(fullfile(Original_image_dir, GT_im_dir(i).name)));
-    S = regexp(im_dir(i).name, '\.', 'split');
+for i = 1:im_num
+    IM =   im2double(imread( fullfile(CC_Original_image_dir,CC_im_dir(i).name) ));
+    IM_GT = im2double(imread(fullfile(GT_Original_image_dir, GT_im_dir(i).name)));
+    S = regexp(CC_im_dir(i).name, '\.', 'split');
     IMname = S{1};
     [h,w,ch] = size(IM);
     % color or gray image
@@ -45,10 +44,10 @@ for i = 1 : im_num
         IMout_ycbcr(:, :, 3) = IMin_cr;
         IMout = ycbcr2rgb(IMout_ycbcr);
     end
-    PSNR = [PSNR csnr( uint8(IMout), uint8(IM_GT), 0, 0 )];
-    SSIM = [SSIM cal_ssim( uint8(IMout), uint8(IM_GT), 0, 0 )];
-    imwrite(IMout, ['C:\Users\csjunxu\Desktop\CVPR2017\cc_Results\Real_CSF\CSF_' IMname '.png']);
+    PSNR = [PSNR csnr( IMout*255, IM_GT*255, 0, 0 )];
+    SSIM = [SSIM cal_ssim( IMout*255, IM_GT*255, 0, 0 )];
+    imwrite(IMout, ['C:\Users\csjunxu\Desktop\CVPR2017\cc_Results\Real_' method '\' method '_' IMname '.png']);
 end
 mPSNR = mean(PSNR);
 mSSIM = mean(SSIM);
-save(['C:\Users\csjunxu\Desktop\CVPR2017\cc_Results\', method, '_CCNoise.mat'],'nSig','PSNR','mPSNR');
+save(['C:\Users\csjunxu\Desktop\CVPR2017\cc_Results\', method, '_CCNoise.mat'],'nSig','PSNR','mPSNR','SSIM','mSSIM');
