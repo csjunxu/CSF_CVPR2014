@@ -40,6 +40,7 @@ for nSig     =  [15]
     SSIM = [];
     CCPSNR = [];
     CCSSIM = [];
+    RunTime = [];
     for i = 1 : im_num
         IM =   im2double(imread( fullfile(TT_Original_image_dir,TT_im_dir(i).name) ));
         IM_GT = im2double(imread(fullfile(GT_Original_image_dir, GT_im_dir(i).name)));
@@ -54,8 +55,7 @@ for nSig     =  [15]
         IMout = zeros(size(IM));
         %         randn('seed',0);
         %         noise_img          =   I+ nSig*randn(size(I));
-        RunTime = [];
-        
+        time0 = clock;
         load(fullfile('models','table1',['sigma',num2str(nSig)],modelname));
         for cc = 1:ch
             %% denoising
