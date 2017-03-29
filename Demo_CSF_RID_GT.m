@@ -54,15 +54,19 @@ for nSig     =  [15]
         IMout = zeros(size(IM));
         %         randn('seed',0);
         %         noise_img          =   I+ nSig*randn(size(I));
+        RunTime = [];
+        
         load(fullfile('models','table1',['sigma',num2str(nSig)],modelname));
         for cc = 1:ch
             %% denoising
             IMoutcc = csf_predict(model,IM(:,:,cc)*255);
             IMout(:,:,cc) = IMoutcc{end};
         end
+        RunTime = [RunTime etime(clock,time0)];
+        fprintf('Total elapsed time = %f s\n', (etime(clock,time0)) );
         PSNR = [PSNR csnr( IMout, IM_GT*255, 0, 0 )];
         SSIM = [SSIM cal_ssim( IMout, IM_GT*255, 0, 0 )];
-            fprintf('The final PSNR = %2.4f, SSIM = %2.4f. \n', PSNR(end), SSIM(end));
+        fprintf('The final PSNR = %2.4f, SSIM = %2.4f. \n', PSNR(end), SSIM(end));
         %% output
         imwrite(IMout/255, [write_sRGB_dir 'Real_' method '/' method '_our_' IMname '.png']);
     end
@@ -70,5 +74,7 @@ for nSig     =  [15]
     mSSIM = mean(SSIM);
     mCCPSNR = mean(CCPSNR);
     mCCSSIM = mean(CCSSIM);
-    save(['C:/Users/csjunxu/Desktop/CVPR2017/our_Results/', method, '_' num2str(nSig) '_' num2str(im_num) '.mat'],'nSig','PSNR','mPSNR','SSIM','mSSIM','CCPSNR','mCCPSNR','CCSSIM','mCCSSIM');
+    mRunTime = mean(RunTime);
+    matname = sprintf([write_sRGB_dir method '_our' num2str(im_num) '.mat']);
+    save(matname,'PSNR','SSIM','mPSNR','mSSIM','RunTime','mRunTime');
 end
