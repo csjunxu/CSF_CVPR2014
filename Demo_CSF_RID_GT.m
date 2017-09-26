@@ -45,8 +45,8 @@ for nSig     =  [15]
     for i = 1 : im_num
         IM =   im2double(imread( fullfile(TT_Original_image_dir,TT_im_dir(i).name) ));
         IM_GT = im2double(imread(fullfile(GT_Original_image_dir, GT_im_dir(i).name)));
-    % S = regexp(TT_im_dir(i).name, '\.', 'split');
-    IMname = TT_im_dir(i).name(1:end-9);
+        % S = regexp(TT_im_dir(i).name, '\.', 'split');
+        IMname = TT_im_dir(i).name(1:end-9);
         [h,w,ch] = size(IM);
         fprintf('%s: \n',TT_im_dir(i).name);
         nPSNR = [nPSNR csnr( IM*255,IM_GT*255, 0, 0 )];
