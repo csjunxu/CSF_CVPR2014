@@ -23,16 +23,17 @@ SSIM = [];
 nPSNR = [];
 nSSIM = [];
 RunTime = [];
-for i = 1 % 1:im_num
+for i = 1 %1:im_num
     Par.image = i;
     load(fullfile(Original_image_dir, im_dir(i).name));
     S = regexp(im_dir(i).name, '\.', 'split');
     [h,w,ch] = size(InoisySRGB);
     for j = 2 % 1:size(info(1).boundingboxes,1)
-        IMinname = [S{1} '_' num2str(j)];
-        fprintf('%s: \n', IMinname);
-        bb = info(i).boundingboxes(j,:);
-        IM = InoisySRGB(bb(1):bb(3), bb(2):bb(4),:);
+        IMname = [S{1} '_' num2str(j)];
+        fprintf('%s: \n', IMname);
+%         bb = info(i).boundingboxes(j,:);
+%         IM = InoisySRGB(bb(1):bb(3), bb(2):bb(4),:);
+        IM = double(imread([Original_image_dir '/' IMname '.png']));
         IM_GT = IM;
         % noise estimation
         IMout = zeros(size(IM));
@@ -40,7 +41,7 @@ for i = 1 % 1:im_num
         load(fullfile('models','table1',['sigma',num2str(nSig)],modelname));
         for cc = 1:ch
             %% denoising
-            IMoutcc = csf_predict(model,IM(:,:,cc)*255);
+            IMoutcc = csf_predict(model,IM(:,:,cc));
             IMout(:,:,cc) = IMoutcc{end};
         end
         RunTime = [RunTime etime(clock,time0)];
